@@ -1,0 +1,31 @@
+# Dependencies
+node_modules/
+
+# Production & Next.js builds
+dist/
+build/
+.next/
+out/
+.vercel/
+*.tsbuildinfo
+
+# Cache & Temporary
+.cache/
+.temp/
+.tmp/
+.tmp-*
+.claude-replay.*
+.vite/
+vite.config.*.timestamp-*
+/.figma/design-context/
+/.plugins/
+/.opencode-skills/
+
+# Secrets & Environment
+.env*
+!.env.example
+
+# Logs
+logs/
+*.log
+*-debug.log*
