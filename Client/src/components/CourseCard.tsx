@@ -2,13 +2,11 @@
 
 import React from 'react'
 import Link from 'next/link'
-import Image from 'next/image'
-import courseImage from '../assets/course-study.jpg'
 import { Course } from '../data/mockData'
 import { Icon } from './Icon'
 
 export function CourseCard({ course }: { course: Course }) {
-  const fallbackImage = (courseImage as any)?.src || (courseImage as any)
+  const fallbackImage = '/assets/course-study.jpg'
   const imageSource = course.thumbnailUrl || fallbackImage
   const accentColor = course.accent || '#b7f34a'
   const featuresList = (course.features && course.features.length > 0)

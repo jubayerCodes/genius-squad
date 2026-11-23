@@ -3,7 +3,6 @@
 import { use, useState, FormEvent, useEffect } from 'react'
 import Link from 'next/link'
 import { useRouter } from 'next/navigation'
-import courseImage from '../../../../assets/course-study.jpg'
 import { INITIAL_COURSES } from '../../../../data/mockData'
 import DistrictSelect from '../../../../components/DistrictSelect'
 import { useAuth } from '../../../../context/AuthContext'
@@ -221,7 +220,7 @@ export default function CourseEnrollPage({
         <aside className="h-fit rounded-2xl border border-white/10 bg-[#0c1915] p-6 lg:sticky lg:top-28">
           <div className="relative overflow-hidden rounded-xl border border-white/10 aspect-[16/9]">
             <img
-              src={(courseImage as any)?.src || (courseImage as any)}
+              src={course.thumbnailUrl || '/assets/course-study.jpg'}
               alt={course.title}
               className="h-full w-full object-cover"
             />

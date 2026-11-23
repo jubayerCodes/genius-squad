@@ -2,7 +2,6 @@
 
 import { use, useState, useEffect } from 'react'
 import Link from 'next/link'
-import courseImage from '../../../assets/course-study.jpg'
 import { INITIAL_COURSES, Course, toBengaliNumber } from '../../../data/mockData'
 import { Icon } from '../../../components/Icon'
 import { apiClient } from '../../../lib/apiClient'
@@ -75,12 +74,12 @@ export default function CourseDetailsPage({
         <div>
           <div className="relative overflow-hidden rounded-2xl border border-white/10">
             <img
-              src={course.thumbnailUrl || (courseImage as any)?.src || (courseImage as any)}
+              src={course.thumbnailUrl || '/assets/course-study.jpg'}
               alt={course.title}
               onError={(e) => {
                 const target = e.target as HTMLImageElement
                 target.onerror = null
-                target.src = (courseImage as any)?.src || (courseImage as any)
+                target.src = '/assets/course-study.jpg'
               }}
               className="aspect-[16/8] w-full object-cover"
             />

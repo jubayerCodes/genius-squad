@@ -2,7 +2,6 @@
 
 import { useState, useEffect } from 'react'
 import Link from 'next/link'
-import teachersImage from '../assets/teachers.jpg'
 import { INITIAL_COURSES, Course, toBengaliNumber } from '../data/mockData'
 import { CourseCard } from '../components/CourseCard'
 import { CourseCardSkeleton } from '../components/Skeleton'
@@ -104,7 +103,7 @@ export default function HomePage() {
           <div className="relative mx-auto w-full max-w-[530px]">
             <div className="teacher-frame relative overflow-hidden border border-white/10 bg-[#0d1b17] shadow-2xl">
               <img
-                src={(teachersImage as any)?.src || (teachersImage as any)}
+                src="/assets/teachers.jpg"
                 alt="Genius Squad teachers"
                 className="h-[520px] w-full object-cover object-center"
               />
