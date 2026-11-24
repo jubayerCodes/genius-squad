@@ -46,7 +46,7 @@ export function Auth({ mode }: AuthProps) {
     if (!authLoading && user) {
       if (redirectParam) {
         router.replace(redirectParam)
-      } else if (user.role === 'ADMIN') {
+      } else if (user.role === 'ADMIN' || user.role === 'SUPER_ADMIN') {
         router.replace('/admin')
       } else {
         router.replace('/dashboard')
@@ -83,7 +83,7 @@ export function Auth({ mode }: AuthProps) {
 
       if (redirectParam) {
         router.replace(redirectParam)
-      } else if (userProfile.role === 'ADMIN') {
+      } else if (userProfile.role === 'ADMIN' || userProfile.role === 'SUPER_ADMIN') {
         router.replace('/admin')
       } else {
         router.replace('/dashboard')

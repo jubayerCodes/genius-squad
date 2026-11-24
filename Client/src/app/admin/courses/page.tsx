@@ -643,7 +643,14 @@ function AdminCoursesContent() {
                         <div className="flex items-center gap-3">
                           <div className="relative h-12 w-20 flex-shrink-0 overflow-hidden rounded-lg border border-[#232d38] bg-[#0c1218]">
                             <img
-                              src={course.thumbnailUrl || '/assets/course-study.jpg'}
+                              src={
+                                course.thumbnailUrl &&
+                                course.thumbnailUrl.trim() !== '' &&
+                                course.thumbnailUrl !== 'null' &&
+                                course.thumbnailUrl !== 'undefined'
+                                  ? course.thumbnailUrl
+                                  : '/assets/course-study.jpg'
+                              }
                               alt={course.title}
                               className="h-full w-full object-cover"
                               onError={(e) => {
@@ -984,7 +991,14 @@ function AdminCoursesContent() {
                   {/* Image Preview Box */}
                   <div className="relative h-20 w-32 flex-shrink-0 overflow-hidden rounded-xl border border-[#232d38] bg-[#131b24]">
                     <img
-                      src={formData.thumbnailUrl || '/assets/course-study.jpg'}
+                      src={
+                        formData.thumbnailUrl &&
+                        formData.thumbnailUrl.trim() !== '' &&
+                        formData.thumbnailUrl !== 'null' &&
+                        formData.thumbnailUrl !== 'undefined'
+                          ? formData.thumbnailUrl
+                          : '/assets/course-study.jpg'
+                      }
                       alt="Thumbnail Preview"
                       className="h-full w-full object-cover"
                       onError={(e) => {

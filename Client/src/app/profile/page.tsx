@@ -133,10 +133,10 @@ function ProfileContent() {
       <div className="flex items-center justify-between mb-8">
         <div>
           <Link
-            href="/dashboard"
+            href={user?.role === 'STUDENT' ? '/dashboard' : '/admin'}
             className="text-xs text-slate-400 hover:text-white mb-2 inline-block transition"
           >
-            ← ড্যাশবোর্ডে ফিরে যান
+            ← {user?.role === 'STUDENT' ? 'ড্যাশবোর্ডে' : 'অ্যাডমিন প্যানেলে'} ফিরে যান
           </Link>
           <h1 className="font-display text-3xl font-black text-white">প্রোফাইল সেটিংস</h1>
           <p className="text-xs text-slate-400 mt-1">আপনার ব্যক্তিগত ও একাডেমিক তথ্য আপডেট করুন।</p>

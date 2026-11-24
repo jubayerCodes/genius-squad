@@ -7,8 +7,10 @@ import { CourseCard } from '../components/CourseCard'
 import { CourseCardSkeleton } from '../components/Skeleton'
 import { Icon } from '../components/Icon'
 import { apiClient } from '../lib/apiClient'
+import { useAuth } from '../context/AuthContext'
 
 export default function HomePage() {
+  const { user } = useAuth()
   const [courses, setCourses] = useState<Course[]>(INITIAL_COURSES)
   const [isCoursesLoading, setIsCoursesLoading] = useState(false)
   const [filter, setFilter] = useState<'সব কোর্স' | 'SSC' | 'HSC'>('সব কোর্স')
@@ -76,15 +78,27 @@ export default function HomePage() {
               >
                 কোর্স দেখুন <Icon name="arrow" size={18} />
               </button>
-              <Link
-                href="/dashboard"
-                className="secondary-button"
-              >
-                <span className="grid size-6 place-items-center rounded-full bg-white/10">
-                  <Icon name="play" size={12} />
-                </span>
-                আমার ড্যাশবোর্ড
-              </Link>
+              {user && (user.role === 'ADMIN' || user.role === 'SUPER_ADMIN') ? (
+                <Link
+                  href="/admin"
+                  className="secondary-button !border-amber-400/40 !bg-amber-400/10 !text-amber-300 hover:!bg-amber-400/20"
+                >
+                  <span className="grid size-6 place-items-center rounded-full bg-amber-400/20 text-amber-300">
+                    🛡️
+                  </span>
+                  অ্যাডমিন প্যানেল
+                </Link>
+              ) : (
+                <Link
+                  href="/dashboard"
+                  className="secondary-button"
+                >
+                  <span className="grid size-6 place-items-center rounded-full bg-white/10">
+                    <Icon name="play" size={12} />
+                  </span>
+                  আমার ড্যাশবোর্ড
+                </Link>
+              )}
             </div>
             <div className="mt-12 flex flex-wrap gap-8">
               {[
