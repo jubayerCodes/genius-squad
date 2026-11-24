@@ -40,6 +40,12 @@ These rules apply across the entire Genius Squad repository (both `Client/` and 
    - Strict `UNIQUE` constraint and validation regex on `transactionId` to prevent duplicate or fraudulent MFS submission.
 5. **Password & Credential Security:**
    - Passwords must be hashed using `bcryptjs` (salt rounds $\ge 10$). Never log, return, or store plaintext passwords.
+6. **Role Governance & Super Admin Downgrade Policy:**
+   - All newly registered users are strictly assigned the `STUDENT` role.
+   - Any `ADMIN` can promote an active `STUDENT` to `ADMIN`.
+   - **Only the `SUPER_ADMIN` can downgrade an `ADMIN` back to `STUDENT` or delete an `ADMIN` account.**
+   - Standard `ADMIN`s cannot downgrade, suspend, or delete other admins (`403 Forbidden`).
+   - `SUPER_ADMIN` is a unique, immutable role held exclusively by the single root platform owner (`admin@geniussquad.com`).
 
 ---
 

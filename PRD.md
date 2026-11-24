@@ -92,13 +92,29 @@ graph TB
 
 ---
 
-## 3. User Roles & Permission Matrix
+## 3. User Roles, Role Governance & Downgrade Policy
 
-| Role | Description | Core Capabilities |
+### 3.1 Role Hierarchy Matrix
+
+| Role | Description | Core Capabilities & Boundaries |
 | :--- | :--- | :--- |
 | **Guest Student** | Unauthenticated visitor | Browse homepage, filter courses by class (SSC/HSC), view course details, initiate enrollment/registration. |
-| **Registered Student** | Authenticated learner | Enroll in courses, submit MFS payment details (TrxID), track enrollment status on their **Student Dashboard**, access the **Private Facebook Group** upon approval, and update demographic data on their **Profile Settings** page. |
-| **Platform Administrator** | Operational reviewer | Access the protected **Admin Panel (`/admin`)**, review pending bKash/Nagad transactions, verify TrxIDs against mobile statements, approve/reject enrollments with one click, and inspect student records. |
+| **Registered Student (`STUDENT`)** | Authenticated learner | Default role for all registrations. Enroll in courses, submit MFS payment details (TrxID), track enrollment status on **Student Dashboard (`/dashboard`)**, access **Private Facebook Group** upon approval, and edit profile settings. |
+| **Platform Administrator (`ADMIN`)** | Operational reviewer | Access **Admin Panel (`/admin`)**, verify/reject MFS transactions, manage courses (`/admin/courses`), view user list (`/admin/users`), promote students to admin (`ADMIN`), and suspend/unsuspend student accounts. Strictly barred from student dashboard (`/dashboard`). Cannot downgrade, suspend, or delete other admins. |
+| **Super Administrator (`SUPER_ADMIN`)** | Root platform owner | Unique single account (`admin@geniussquad.com`). Holds all Admin privileges plus sole governance authority: can downgrade any Admin back to Student (`STUDENT`), suspend admin accounts, or delete admins. Root account cannot be modified, downgraded, suspended, or deleted by anyone. |
+
+### 3.2 Role Governance & Downgrade Policy
+
+1. **Default Registration:** All new user accounts registered through the web portal are strictly assigned the `STUDENT` role.
+2. **Admin Promotion Authority:** Any existing `ADMIN` (or `SUPER_ADMIN`) can promote an active `STUDENT` to the `ADMIN` role.
+3. **Exclusive Super Admin Downgrade Authority:**
+   - Once a user is an `ADMIN`, standard administrators cannot modify their role, suspend them, or delete them (rendered as `Protected` in UI and enforced with `403 Forbidden` on backend API routes).
+   - **Only the `SUPER_ADMIN` has the authority to downgrade an Admin's role back to `STUDENT`** via `PATCH /api/v1/admin/users/:id/role`.
+   - Only the `SUPER_ADMIN` can suspend or delete an `ADMIN` account.
+4. **Single Root Super Admin Guarantee:** The `SUPER_ADMIN` role is unique and held by only one root account. The system prevents creating multiple Super Admins or altering the Super Admin's role.
+5. **Account Suspension & Safe Deletion:**
+   - Administrators can suspend a student's access (`isSuspended: true`) without deleting their educational or financial records.
+   - Deleting a user with existing course enrollments or payments will automatically convert the action into an account suspension to preserve financial audit logs.
 
 ---
 
