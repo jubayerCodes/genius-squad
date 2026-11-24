@@ -353,6 +353,51 @@ erDiagram
         timestamp verified_at
         timestamp created_at
     }
+
+    EXAMS {
+        string id PK
+        string course_id FK
+        string title
+        string description
+        int duration_minutes
+        decimal total_marks
+        decimal pass_marks
+        decimal negative_marking
+        boolean is_active
+        timestamp created_at
+        timestamp updated_at
+    }
+
+    EXAM_QUESTIONS {
+        string id PK
+        string exam_id FK
+        string question
+        string[] options
+        int correct_option
+        string explanation
+        decimal marks
+        int order_index
+    }
+
+    EXAM_SUBMISSIONS {
+        string id PK
+        string exam_id FK
+        uuid user_id FK
+        json answers
+        decimal total_score
+        int total_questions
+        int correct_count
+        int wrong_count
+        int unattempted_count
+        int time_taken_seconds
+        timestamp started_at
+        timestamp submitted_at
+    }
+
+    COURSES ||--o{ EXAMS : contains
+    EXAMS ||--o{ EXAM_QUESTIONS : contains
+    EXAMS ||--o{ EXAM_SUBMISSIONS : receives
+    USERS ||--o{ EXAM_SUBMISSIONS : submits
 ```
 
 ---
@@ -362,7 +407,57 @@ erDiagram
 ```mermaid
 timeline
     title Genius Squad Platform Roadmap
-    Phase 1 (Current MVP) : Next.js 15 Full-Stack on Vercel ($0/mo) : Student Profile Management : Manual bKash/Nagad QR Payments : Admin Verification Portal : Private Facebook Group Access
-    Phase 2 (Growth) : Automated MFS Gateway (SSLCOMMERZ / bKash Merchant) : Automated SMS Notification on Approval : Unlisted YouTube In-App Player : Chapter-based Quiz System
-    Phase 3 (Scale) : Live MCQ Exam Engine with Leaderboard : Discussion Community Forum : Parent Attendance & Marks Notification
+    Phase 1 (Current MVP) : Next.js 16 Full-Stack on Vercel ($0/mo) : Student Profile Management : Manual bKash/Nagad QR Payments : Admin Verification Portal : Private Facebook Group Access
+    Phase 2 (Growth) : Timed MCQ Exam System : Instant Score & Answer Key : Live Competitive Leaderboard : Automated MFS Gateway (SSLCOMMERZ / bKash API) : Automated SMS Notification on Approval
+    Phase 3 (Scale) : Unlisted YouTube In-App Player : Discussion Community Forum : Parent Attendance & Marks Notification
 ```
+
+---
+
+## 9. MCQ Exam & Live Leaderboard System Specification
+
+### 9.1 System Overview & Learning Objectives
+The **Genius Squad Exam System** delivers structured, competitive Multiple Choice Question (MCQ) assessments tailored for Bangladeshi SSC and HSC learners. Designed to mirror realistic board-exam and university-admission test conditions, the engine provides synchronized timed exams, instant automated grading with negative marking, step-by-step solution sheets, and dynamic live leaderboards.
+
+### 9.2 Administrative Capabilities (Exam Creation & Answer Sheet)
+1. **Exam Configuration (`/admin/exams`):**
+   - **Exam Metadata:** Title (e.g., *"SSC ২০২৫ পদার্থবিজ্ঞান: গতিবিদ্যা ও বল ফাইনাল মডেল টেস্ট"*), associated Course, and syllabus description.
+   - **Time Management:** Allotted duration in minutes (e.g., 15, 25, 45, or 60 minutes).
+   - **Grading & Negative Marking Rules:**
+     - Marks per correct question (default: 1.0).
+     - Negative marking penalty per incorrect question (e.g., 0.0, 0.25, or 0.50 marks).
+     - Passing marks threshold.
+   - **Lifecycle Control:** Draft vs. Published (`isActive`).
+2. **Question Builder & Official Answer Sheet:**
+   - Admins can add an unlimited number of MCQ questions per exam.
+   - Each question comprises:
+     - Question statement (supporting Bengali text and LaTeX/math formulas).
+     - 4 or 5 options.
+     - **Mandatory Answer Sheet:** Exact index (0-3) of the correct answer.
+     - **Detailed Solution / Explanation:** Pedagogical explanation displayed in the post-exam answer review.
+   - Question re-ordering and live question preview before publishing.
+
+### 9.3 Student Assessment Experience
+1. **Pre-Exam Briefing:**
+   - Displays exam rules, question count, duration, scoring scheme (+1 / -0.25), and instructions before the countdown begins.
+2. **Live Timed Exam Interface (`/exams/[id]/take`):**
+   - **Anti-Cheat Payload Protection:** The server strips all `correctOption` and `explanation` fields when serving questions to students during an active exam. Answers are calculated strictly on the backend after submission.
+   - **Synchronized Countdown Timer:** Prominent sticky timer showing remaining time.
+   - **Automatic Submission:** If the countdown reaches `00:00`, the exam automatically bundles selected responses and submits them immediately.
+   - **Interactive Question Palette:** Quick-jump question navigation, visual indicators for answered vs. unattempted questions, and a "Mark for Review" flag.
+3. **Instant Evaluation & Results (`/exams/[id]/result`):**
+   - **Instant Scorecard:**
+     - Total score (accounting for negative marking).
+     - Total correct, wrong, and unattempted counts.
+     - Accuracy percentage and total time spent.
+   - **Full Answer Sheet Review (উত্তরমালা ও সমাধান):**
+     - Side-by-side comparison of the student's selected answer vs. the official correct answer.
+     - Color-coded badges (Green for correct, Red for wrong, Slate for skipped).
+     - Teacher's solution/explanation card for every question.
+4. **Live Exam Leaderboard (মেধাতালিকা):**
+   - Dynamically calculated ranking of all students who completed the exam.
+   - **Deterministic Tie-Breaking Algorithm:**
+     1. Primary: Highest `totalScore` DESC.
+     2. Secondary: Lowest `timeTakenSeconds` ASC (faster completion ranks higher).
+     3. Tertiary: Earlier `submittedAt` timestamp ASC.
+   - Displays rank badges (🥇 ১ম, 🥈 ২য়, 🥉 ৩য়, ৪–১০ম...), Student Name, Institution, District, Marks, and Time Taken.
