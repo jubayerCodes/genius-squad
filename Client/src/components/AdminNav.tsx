@@ -2,7 +2,7 @@
 
 import Link from 'next/link'
 import { usePathname } from 'next/navigation'
-import { CreditCard, BookOpen, Users } from 'lucide-react'
+import { CreditCard, BookOpen, Users, FileCheck2 } from 'lucide-react'
 
 export default function AdminNav() {
   const pathname = usePathname()
@@ -19,6 +19,12 @@ export default function AdminNav() {
       href: '/admin/courses',
       icon: BookOpen,
       active: pathname.startsWith('/admin/courses'),
+    },
+    {
+      label: 'পরীক্ষা ম্যানেজমেন্ট',
+      href: '/admin/exams',
+      icon: FileCheck2,
+      active: pathname.startsWith('/admin/exams'),
     },
     {
       label: 'ইউজার ম্যানেজমেন্ট',

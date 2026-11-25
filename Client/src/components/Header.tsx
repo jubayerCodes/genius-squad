@@ -196,6 +196,16 @@ export function Header() {
           >
             কোর্সসমূহ
           </a>
+          <Link
+            href="/exams"
+            className={`rounded-lg px-3.5 py-2 text-sm font-medium transition cursor-pointer ${
+              pathname.startsWith('/exams')
+                ? 'text-[#b7f34a] bg-white/[.04] font-semibold'
+                : 'text-slate-400 hover:text-white hover:bg-white/[.02]'
+            }`}
+          >
+            পরীক্ষাসমূহ
+          </Link>
           <a
             href="/#about"
             onClick={(e) => scrollToSection(e, 'about')}
@@ -382,6 +392,17 @@ export function Header() {
             >
               কোর্সসমূহ
             </a>
+            <Link
+              href="/exams"
+              onClick={() => setMobileMenuOpen(false)}
+              className={`rounded-lg px-4 py-2.5 text-left text-sm font-medium transition cursor-pointer ${
+                pathname.startsWith('/exams')
+                  ? 'text-[#b7f34a] bg-white/[.06] font-semibold'
+                  : 'text-slate-300 hover:bg-white/5'
+              }`}
+            >
+              পরীক্ষাসমূহ
+            </Link>
             <a
               href="/#about"
               onClick={(e) => scrollToSection(e, 'about')}

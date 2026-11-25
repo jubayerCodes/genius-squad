@@ -166,6 +166,94 @@ export const apiClient = {
     request(`/api/v1/admin/users/${id}`, {
       method: 'DELETE',
     }),
+
+  // Admin Exam & Question Management
+  getAdminExams: () => request('/api/v1/admin/exams'),
+
+  getAdminExam: (id: string) => request(`/api/v1/admin/exams/${id}`),
+
+  createExam: (payload: {
+    courseId?: string | null;
+    title: string;
+    description?: string | null;
+    durationMinutes: number;
+    passMarks?: number;
+    negativeMarking?: number;
+    isPublic?: boolean;
+    isActive?: boolean;
+  }) =>
+    request('/api/v1/admin/exams', {
+      method: 'POST',
+      body: JSON.stringify(payload),
+    }),
+
+  updateExam: (id: string, payload: any) =>
+    request(`/api/v1/admin/exams/${id}`, {
+      method: 'PATCH',
+      body: JSON.stringify(payload),
+    }),
+
+  deleteExam: (id: string) =>
+    request(`/api/v1/admin/exams/${id}`, {
+      method: 'DELETE',
+    }),
+
+  addExamQuestion: (
+    examId: string,
+    payload: {
+      question: string;
+      options: string[];
+      correctOption: number;
+      explanation?: string | null;
+      marks?: number;
+    }
+  ) =>
+    request(`/api/v1/admin/exams/${examId}/questions`, {
+      method: 'POST',
+      body: JSON.stringify(payload),
+    }),
+
+  bulkAddExamQuestions: (examId: string, questions: any[]) =>
+    request(`/api/v1/admin/exams/${examId}/questions/bulk`, {
+      method: 'POST',
+      body: JSON.stringify({ questions }),
+    }),
+
+  updateExamQuestion: (examId: string, questionId: string, payload: any) =>
+    request(`/api/v1/admin/exams/${examId}/questions/${questionId}`, {
+      method: 'PATCH',
+      body: JSON.stringify(payload),
+    }),
+
+  deleteExamQuestion: (examId: string, questionId: string) =>
+    request(`/api/v1/admin/exams/${examId}/questions/${questionId}`, {
+      method: 'DELETE',
+    }),
+
+  // Student Exams & Leaderboard
+  getExams: (courseId?: string) =>
+    request(`/api/v1/exams${courseId ? `?courseId=${encodeURIComponent(courseId)}` : ''}`),
+
+  startExam: (id: string) =>
+    request(`/api/v1/exams/${id}/start`, {
+      method: 'POST',
+    }),
+
+  syncExamDraft: (id: string, answers: Record<string, number | null>) =>
+    request(`/api/v1/exams/${id}/sync`, {
+      method: 'PATCH',
+      body: JSON.stringify({ answers }),
+    }),
+
+  submitExam: (id: string, answers: Record<string, number | null>) =>
+    request(`/api/v1/exams/${id}/submit`, {
+      method: 'POST',
+      body: JSON.stringify({ answers }),
+    }),
+
+  getExamResult: (id: string) => request(`/api/v1/exams/${id}/result`),
+
+  getExamLeaderboard: (id: string) => request(`/api/v1/exams/${id}/leaderboard`),
 };
 
 export default apiClient;

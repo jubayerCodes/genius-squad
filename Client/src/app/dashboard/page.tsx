@@ -2,7 +2,8 @@
 
 import { useEffect, useState } from 'react'
 import Link from 'next/link'
-import { Enrollment, Course, INITIAL_COURSES } from '../../data/mockData'
+import { Enrollment, Course, INITIAL_COURSES, toBengaliNumber } from '../../data/mockData'
+import { formatBengaliNumberDecimal } from '../../lib/examHelpers'
 import { apiClient } from '../../lib/apiClient'
 import { useAuth } from '../../context/AuthContext'
 import ProtectedRoute from '../../components/ProtectedRoute'
@@ -11,20 +12,27 @@ import { DashboardEnrollmentSkeleton } from '../../components/Skeleton'
 function DashboardContent() {
   const { user } = useAuth()
   const [liveEnrollments, setLiveEnrollments] = useState<any[]>([])
+  const [liveExams, setLiveExams] = useState<any[]>([])
   const [isLoading, setIsLoading] = useState(true)
   const courses: Course[] = INITIAL_COURSES
 
-  // Fetch live enrollments from API
+  // Fetch live enrollments and exams from API
   useEffect(() => {
     let mounted = true
     const fetchCourses = async () => {
       try {
         setIsLoading(true)
-        const res = await apiClient.getMyCourses()
-        if (mounted && res.data?.enrollments) {
-          setLiveEnrollments(res.data.enrollments)
+        const [enrRes, examRes] = await Promise.all([
+          apiClient.getMyCourses(),
+          apiClient.getExams().catch(() => ({ data: { exams: [] } })),
+        ])
+        if (mounted && enrRes.data?.enrollments) {
+          setLiveEnrollments(enrRes.data.enrollments)
         } else if (mounted) {
           setLiveEnrollments([])
+        }
+        if (mounted && examRes.data?.exams) {
+          setLiveExams(examRes.data.exams)
         }
       } catch {
         if (mounted) setLiveEnrollments([])
@@ -225,6 +233,98 @@ function DashboardContent() {
                         className="w-full secondary-button justify-center !text-xs !py-2.5 inline-flex"
                       >
                         কোর্স আউটলাইন দেখুন
+                      </Link>
+                    )}
+                  </div>
+                </div>
+              )
+            })}
+          </div>
+        )}
+      </section>
+
+      {/* Online MCQ Exams Section */}
+      <section className="mt-14">
+        <div className="flex flex-wrap items-center justify-between gap-4 mb-6">
+          <div>
+            <h2 className="font-display text-2xl font-bold text-white">অনলাইন MCQ পরীক্ষাসমূহ</h2>
+            <p className="text-xs text-slate-400 mt-1">
+              নির্ধারিত সময়ে পরীক্ষা দিয়ে সাথে সাথে ফলাফল ও মেধাতালিকা দেখো।
+            </p>
+          </div>
+          <Link href="/exams" className="secondary-button !py-2 text-xs">
+            সব পরীক্ষা দেখুন →
+          </Link>
+        </div>
+
+        {liveExams.length === 0 ? (
+          <div className="rounded-2xl border border-dashed border-white/10 p-8 text-center bg-white/[.01]">
+            <p className="text-sm text-slate-400">বর্তমানে কোনো সক্রিয় পরীক্ষা নেই।</p>
+          </div>
+        ) : (
+          <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3">
+            {liveExams.slice(0, 3).map((exam) => {
+              const sub = exam.mySubmission
+              const isSubmitted = sub?.status === 'SUBMITTED'
+              const isInProgress = sub?.status === 'IN_PROGRESS'
+
+              return (
+                <div
+                  key={exam.id}
+                  className="flex flex-col justify-between rounded-2xl border border-white/10 bg-[#0c1915] p-6"
+                >
+                  <div>
+                    <div className="flex items-center justify-between gap-2">
+                      <span className="rounded-full bg-[#b7f34a]/10 border border-[#b7f34a]/30 px-2.5 py-0.5 text-[11px] font-bold text-[#b7f34a]">
+                        {exam.course ? exam.course.title : 'ওপেন মডেল টেস্ট'}
+                      </span>
+                      <span className="text-[11px] text-slate-400">
+                        {toBengaliNumber(exam.durationMinutes)} মিনিট • {toBengaliNumber(exam._count?.questions || 0)} প্রশ্ন
+                      </span>
+                    </div>
+
+                    <h3 className="mt-3 font-display text-lg font-bold text-white">
+                      {exam.title}
+                    </h3>
+
+                    {isSubmitted && sub && (
+                      <div className="mt-3 rounded-xl border border-emerald-500/20 bg-emerald-500/[.06] px-3 py-2 text-xs text-emerald-300 flex justify-between">
+                        <span>প্রাপ্ত নম্বর:</span>
+                        <strong className="text-[#b7f34a]">
+                          {formatBengaliNumberDecimal(sub.totalScore)} / {formatBengaliNumberDecimal(exam.totalMarks)}
+                        </strong>
+                      </div>
+                    )}
+                  </div>
+
+                  <div className="mt-5 border-t border-white/[.08] pt-4">
+                    {isSubmitted ? (
+                      <Link
+                        href={`/exams/${exam.id}/result`}
+                        className="flex w-full items-center justify-center rounded-xl border border-[#b7f34a]/40 bg-[#b7f34a]/15 py-2.5 text-xs font-bold text-[#b7f34a] hover:bg-[#b7f34a] hover:text-[#07110e] transition"
+                      >
+                        ফলাফল ও মেধাতালিকা দেখুন
+                      </Link>
+                    ) : isInProgress ? (
+                      <Link
+                        href={`/exams/${exam.id}/take`}
+                        className="primary-button w-full justify-center !py-2.5 text-xs"
+                      >
+                        পরীক্ষা চালিয়ে যান
+                      </Link>
+                    ) : exam.isEligible ? (
+                      <Link
+                        href={`/exams/${exam.id}/take`}
+                        className="primary-button w-full justify-center !py-2.5 text-xs"
+                      >
+                        পরীক্ষা শুরু করুন
+                      </Link>
+                    ) : (
+                      <Link
+                        href={exam.courseId ? `/courses/${exam.courseId}` : '/exams'}
+                        className="secondary-button w-full justify-center !py-2.5 text-xs"
+                      >
+                        কোর্সে ভর্তি হলে আনলক হবে
                       </Link>
                     )}
                   </div>

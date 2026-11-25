@@ -4,6 +4,7 @@ import { UserRoutes } from '../modules/user/user.route.js';
 import { CourseRoutes } from '../modules/course/course.route.js';
 import { EnrollmentRoutes } from '../modules/enrollment/enrollment.route.js';
 import { AdminRoutes } from '../modules/admin/admin.route.js';
+import { ExamRoutes } from '../modules/exam/exam.route.js';
 
 const router = Router();
 
@@ -28,6 +29,10 @@ const moduleRoutes: ModuleRoute[] = [
   {
     path: '/enrollments',
     route: EnrollmentRoutes,
+  },
+  {
+    path: '/exams',
+    route: ExamRoutes,
   },
   {
     path: '/admin',

@@ -1,6 +1,7 @@
 import { Router } from 'express';
 import { AdminController } from './admin.controller.js';
 import { CourseController } from '../course/course.controller.js';
+import { ExamController } from '../exam/exam.controller.js';
 import { validateRequest } from '../../middlewares/validateRequest.js';
 import { authGuard } from '../../middlewares/authGuard.js';
 import { courseImageUpload } from '../../middlewares/upload.js';
@@ -15,6 +16,13 @@ import {
   toggleCourseStatusValidationSchema,
   bulkDeleteCoursesValidationSchema,
 } from '../course/course.validation.js';
+import {
+  createExamValidationSchema,
+  updateExamValidationSchema,
+  createQuestionValidationSchema,
+  bulkCreateQuestionsValidationSchema,
+  updateQuestionValidationSchema,
+} from '../exam/exam.validation.js';
 
 const router = Router();
 
@@ -94,5 +102,54 @@ router.patch(
 );
 
 router.delete('/users/:id', authGuard('ADMIN'), AdminController.deleteUser);
+
+// ========================
+// Exam & Question Management
+// ========================
+router.get('/exams', authGuard('ADMIN'), ExamController.getAllAdminExams);
+router.get('/exams/:id', authGuard('ADMIN'), ExamController.getAdminExamById);
+
+router.post(
+  '/exams',
+  authGuard('ADMIN'),
+  validateRequest(createExamValidationSchema),
+  ExamController.createExam
+);
+
+router.patch(
+  '/exams/:id',
+  authGuard('ADMIN'),
+  validateRequest(updateExamValidationSchema),
+  ExamController.updateExam
+);
+
+router.delete('/exams/:id', authGuard('ADMIN'), ExamController.deleteExam);
+
+router.post(
+  '/exams/:id/questions',
+  authGuard('ADMIN'),
+  validateRequest(createQuestionValidationSchema),
+  ExamController.addQuestion
+);
+
+router.post(
+  '/exams/:id/questions/bulk',
+  authGuard('ADMIN'),
+  validateRequest(bulkCreateQuestionsValidationSchema),
+  ExamController.bulkAddQuestions
+);
+
+router.patch(
+  '/exams/:id/questions/:questionId',
+  authGuard('ADMIN'),
+  validateRequest(updateQuestionValidationSchema),
+  ExamController.updateQuestion
+);
+
+router.delete(
+  '/exams/:id/questions/:questionId',
+  authGuard('ADMIN'),
+  ExamController.deleteQuestion
+);
 
 export const AdminRoutes = router;

@@ -94,6 +94,84 @@ async function seed() {
       },
     });
 
+    // 3. Seed Sample Open MCQ Model Test (idempotent)
+    const demoExamId = 'ssc-physics-demo-test';
+    const demoQuestions = [
+      {
+        id: 'q-demo-phy-1',
+        question: 'নিউটনের গতির দ্বিতীয় সূত্র থেকে নিচের কোন সমীকরণটি পাওয়া যায়?',
+        options: ['F = ma', 'v = u + at', 'E = mc²', 'P = mv'],
+        correctOption: 0,
+        explanation: 'বস্তুর ভরবেগের পরিবর্তনের হার এর ওপর প্রযুক্ত বলের সমানুপাতিক (F = ma)।',
+        marks: 1,
+        orderIndex: 0,
+      },
+      {
+        id: 'q-demo-phy-2',
+        question: 'আন্তর্জাতিক পদ্ধতিতে (SI) কাজের একক কোনটি?',
+        options: ['ওয়াট (Watt)', 'নিউটন (Newton)', 'জুল (Joule)', 'প্যাসকেল (Pascal)'],
+        correctOption: 2,
+        explanation: 'কাজ = বল × সরণ; SI পদ্ধতিতে কাজের একক জুল (Joule)।',
+        marks: 1,
+        orderIndex: 1,
+      },
+      {
+        id: 'q-demo-phy-3',
+        question: 'কোনো বস্তু স্থির অবস্থান থেকে ২ m/s² সুষম ত্বরণে চললে ৫ সেকেন্ড পর বেগ কত হবে?',
+        options: ['৫ m/s', '১০ m/s', '১৫ m/s', '২০ m/s'],
+        correctOption: 1,
+        explanation: 'v = u + at = 0 + (2 × 5) = 10 m/s।',
+        marks: 1,
+        orderIndex: 2,
+      },
+      {
+        id: 'q-demo-phy-4',
+        question: 'শব্দের বেগ কোন মাধ্যমে সবচেয়ে বেশি?',
+        options: ['বায়বীয় মাধ্যমে', 'তরল মাধ্যমে', 'কঠিন মাধ্যমে', 'শূন্য মাধ্যমে'],
+        correctOption: 2,
+        explanation: 'কঠিন পদার্থের অণুগুলো সবচেয়ে কাছাকাছি থাকায় কঠিন মাধ্যমে শব্দের বেগ সর্বোচ্চ হয়।',
+        marks: 1,
+        orderIndex: 3,
+      },
+      {
+        id: 'q-demo-phy-5',
+        question: 'ওহমের সূত্র অনুযায়ী পরিবাহীর রোধ স্থির থাকলে প্রবাহমাত্রা (I) ও বিভব পার্থক্য (V)-এর সম্পর্ক কী?',
+        options: ['ব্যস্তানুপাতিক', 'সমানুপাতিক', 'বর্গের সমানুপাতিক', 'কোনো সম্পর্ক নেই'],
+        correctOption: 1,
+        explanation: 'তাপমাত্রা স্থির থাকলে পরিবাহীর তড়িৎ প্রবাহ দুই প্রান্তের বিভব পার্থক্যের সমানুপাতিক (V = IR)।',
+        marks: 1,
+        orderIndex: 4,
+      },
+    ];
+
+    await prisma.exam.upsert({
+      where: { id: demoExamId },
+      update: {},
+      create: {
+        id: demoExamId,
+        courseId: 'ssc-final-revision',
+        title: 'SSC পদার্থবিজ্ঞান: গতি, বল ও কাজ ফ্রি মডেল টেস্ট',
+        description: 'বোর্ড পরীক্ষার প্রস্তুতি যাচাইয়ের জন্য সবার জন্য উন্মুক্ত ৫ নম্বরের দ্রুত MCQ মডেল টেস্ট।',
+        durationMinutes: 10,
+        totalMarks: 5,
+        passMarks: 2,
+        negativeMarking: 0.25,
+        isPublic: true,
+        isActive: true,
+      },
+    });
+
+    for (const dq of demoQuestions) {
+      await prisma.examQuestion.upsert({
+        where: { id: dq.id },
+        update: {},
+        create: {
+          ...dq,
+          examId: demoExamId,
+        },
+      });
+    }
+
     process.exit(0);
   } catch {
     process.exit(1);
